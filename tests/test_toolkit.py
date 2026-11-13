@@ -145,7 +145,7 @@ class ToolkitTests(ToolkitFixture):
     def test_cli_from_another_working_directory(self):
         plan_path = self.base / "plan.json"
         command = [sys.executable, str(ROOT / "scripts/codex_bp.py")]
-        result = subprocess.run(command + ["preview", "--operation", "init", "--target", str(self.target), "--out", str(plan_path)], cwd=self.base, capture_output=True)
+        result = subprocess.run(command + ["preview", "--source", "local", "--operation", "init", "--target", str(self.target), "--out", str(plan_path)], cwd=self.base, capture_output=True)
         self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8"))
         self.assertEqual(tree(self.target), {})
         result = subprocess.run(command + ["apply", "--plan", str(plan_path)], cwd=self.base, capture_output=True)
@@ -265,6 +265,12 @@ class ServerTests(ToolkitFixture):
     def setUp(self):
         super().setUp()
         shutil.copytree(ROOT / "web", self.source / "web")
+        from workbench import REPOSITORY
+        self.remote = Toolkit(self.source, source={"kind":"github", "repository":REPOSITORY, "commit":"a"*40}, allowed_versions=["0.1.0"])
+        remote_patch = patch("codexbp.sources.github_toolkit", return_value=self.remote)
+        remote_patch.start(); self.addCleanup(remote_patch.stop)
+        endpoint_patch = patch("codexbp.server.github_toolkit", return_value=self.remote)
+        endpoint_patch.start(); self.addCleanup(endpoint_patch.stop)
         self.server = LocalServer(self.tool)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -291,6 +297,7 @@ class ServerTests(ToolkitFixture):
         self.assertEqual(status, 200); p=json.loads(body)
         status, body=self.request("/api/plans", {"project_id":p["id"], "operation":"init"})
         self.assertEqual(status, 200); plan=json.loads(body)
+        self.assertEqual(plan["source"]["kind"], "github")
         self.assertEqual(tree(self.target), {})
         self.assertEqual(self.request(f"/api/plans/{plan['id']}/apply", {})[0],200)
         self.assertEqual(self.request(f"/api/plans/{plan['id']}/apply", {})[0],409)

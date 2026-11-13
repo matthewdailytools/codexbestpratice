@@ -4,6 +4,10 @@
 
 `scripts/codexbp/core.py` 实现文件保护、目录、版本、识别与接入；`server.py` 暴露 HTTP API；`scripts/codex_bp.py` 提供 CLI；`web/` 是无构建前端。
 
+用户入口是提示词引用整个 GitHub 工作台。`WORKBENCH.md` 描述环境准备与模式选择；根目录 `workbench.py` 是可单独获取的 Python 标准库入口，通过 HTTPS 下载完整工作台，不执行 Git clone，不要求 Git 或 pip。默认模式选择后自动输出差异、应用并验证；引导模式由 Codex 收集设置后调用同一入口。
+
+`scripts/codexbp/sources.py` 统一 Web 和高级 CLI 的来源选择，默认 GitHub；内部 core 保持可离线、确定性操作。缓存位于用户缓存目录，每个 commit 独立存放；分支先解析为 commit，应用和检查固定到该 commit。读取失败不会静默换成本地旧版。缓存中自行创建的本地版本不视为该 GitHub commit 的已发布版本。
+
 索引为 `catalog/index.json`；规则原文在 `catalog/rules/`，Skills 在 `.agents/skills/`，模板在 `.codex-bp/templates/`。界面直接编辑源文件，没有数据库副本。
 
 Skill frontmatter 仅支持 `name`、`description`，值为 JSON 双引号字符串（有效 YAML 标量）。界面自动生成；首版不提供任意外部 YAML Skill 导入和附属脚本打包。
@@ -15,6 +19,22 @@ Skill frontmatter 仅支持 `name`、`description`，值为 JSON 双引号字符
 ## CLI 配置
 
 `python scripts/codex_bp.py --help` 列出命令。除 `serve` 外输出 UTF-8 JSON；`preview --out` 直接保存 UTF-8，避免终端重定向编码差异。
+
+以下是开发／自动化入口，普通用户只需使用提示词：
+
+```text
+python workbench.py --target <项目> --mode default
+python workbench.py --target <项目> --mode guided --settings <临时配置.json>
+python workbench.py --target <项目> --action upgrade
+python workbench.py --target <项目> --action open
+python scripts/codex_bp.py preview --operation init --target <项目> --out <临时计划.json>
+python scripts/codex_bp.py apply --plan <临时计划.json>
+python scripts/codex_bp.py serve --open
+```
+
+高级 `preview` 的 `--source` 默认为 `github`，明确传 `--source local` 才采用本地库；`--ref` 可指定 GitHub 分支、标签或 commit。`workbench.py --action fetch` 只准备整个工作台并返回来源信息，不修改业务项目。可用 `--cache-dir` 指定隔离缓存。
+
+已安装项目的检查、配置修改和重复默认应用保留来源 commit；`upgrade` 重新检查 GitHub。`lock.json` 记录 repository、commit 与规范版本，不记录机器缓存绝对路径。旧接入记录没有 source 时仍按本地来源兼容处理。
 
 `--settings` 接受可选字段，参考 `examples/project-settings.json`：
 
@@ -40,13 +60,16 @@ Skill frontmatter 仅支持 `name`、`description`，值为 JSON 双引号字符
 | `POST /api/catalog` | `{id,title,kind,description,body,enabled,etag?}`；编辑需旧 etag |
 | `POST /api/projects` | `{path}` 登记已有目录，返回项目 id |
 | `POST /api/detect` | `{project_id}` 返回技术栈与命令建议 |
-| `POST /api/plans` | `{project_id,operation,settings?,version?}` 返回配置、冲突、差异、计划 id |
+| `POST /api/sources/github` | `{ref?,version?}` 获取工作台并返回固定来源、规范版本与目录 |
+| `POST /api/plans` | `{project_id,operation,settings?,version?,source?,ref?}`，source 默认 github |
 | `POST /api/plans/<id>/apply` | `{}` 应用并消费对应计划 |
 | `GET /api/releases/<version>` | 快照清单及当前草稿相对该版本差异 |
 | `POST /api/releases` | `{version,catalog_hash}` 创建本地版本 |
 | `POST /api/restore` | `{version,catalog_hash}` 复制历史内容为草稿 |
 
 错误为 `{error: string}`：输入 400、来源／令牌 403、未知对象 404、过期／冲突 409、读取写入故障 500。项目 API 只接受已登记项目 id。
+
+GitHub 获取失败返回 502。远程获取只写项目外缓存；用户选择模式后，Web 自动调用计划应用，不再增加单独确认。管理台通过 `serve --target <目录>` 自动登记项目并进入项目页面。
 
 ## 文件保护与实际边界
 

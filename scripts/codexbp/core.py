@@ -173,8 +173,10 @@ def skill_text(name, description, body):
 
 
 class Toolkit:
-    def __init__(self, root=ROOT):
+    def __init__(self, root=ROOT, source=None, allowed_versions=None):
         self.root = Path(root).resolve()
+        self.source = source
+        self.allowed_versions = set(allowed_versions) if allowed_versions is not None else None
 
     def catalog(self):
         index = load_json(self.root / "catalog/index.json")
@@ -243,6 +245,8 @@ class Toolkit:
         if directory.exists():
             for path in directory.iterdir():
                 if path.is_dir() and re.fullmatch(r"\d+\.\d+\.\d+", path.name):
+                    if self.allowed_versions is not None and path.name not in self.allowed_versions:
+                        continue
                     manifest = load_json(safe_path(self.root, f"releases/{path.name}/manifest.json"))
                     result.append({"version": path.name, "created_at": manifest["created_at"],
                                    "items": len(manifest["catalog"])})
@@ -263,6 +267,8 @@ class Toolkit:
 
     def release(self, version):
         with GUARD:
+            if self.source is not None:
+                raise BPError("GitHub 来源只读取已发布快照；请在本地规范库维护草稿")
             if not isinstance(version, str) or not re.fullmatch(r"(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)", version):
                 raise BPError("版本格式应为 major.minor.patch，例如 0.1.0")
             destination = safe_path(self.root, f"releases/{version}")
@@ -285,6 +291,8 @@ class Toolkit:
 
     def snapshot(self, version=None):
         version = version or self.latest()
+        if self.allowed_versions is not None and version not in self.allowed_versions:
+            raise BPError("该规范版本不在所选 GitHub commit 中", 404)
         if not re.fullmatch(r"\d+\.\d+\.\d+", version):
             raise BPError("无效的版本号")
         directory = safe_path(self.root, f"releases/{version}")
@@ -470,6 +478,8 @@ class Toolkit:
             new_lock = {"schema_version": 1, "version": chosen,
                         "release_hash": digest(json_bytes(manifest)), "enabled_ids": sorted(enabled),
                         "agents_block_hash": digest(block), "files": {p: digest(b) for p, b in payload.items()}}
+            if self.source is not None:
+                new_lock["source"] = self.source
             desired[LOCK] = json_bytes(new_lock)
             watched = {p: digest(read_bytes(safe_path(target, p))) for p in desired}
             watched["AGENTS.override.md"] = digest(override)
@@ -478,6 +488,8 @@ class Toolkit:
             plan = {"schema_version": 1, "operation": operation, "target": str(target), "version": chosen,
                     "settings": settings, "release_hash": digest(json_bytes(manifest)), "expected": watched,
                     "conflicts": conflicts, "changes": changes, "config": config}
+            if self.source is not None:
+                plan["source"] = self.source
             plan["fingerprint"] = digest(json_bytes(plan))
             return plan
 
@@ -511,7 +523,8 @@ class Toolkit:
         if not config["checks"]:
             notes.append("验证命令待补充")
         return {"installed": True, "ok": not plan["conflicts"], "version": plan["version"],
-                "latest": self.latest(), "issues": plan["conflicts"], "notes": notes, "config": config}
+                "latest": self.latest(), "issues": plan["conflicts"], "notes": notes, "config": config,
+                "source": load_json(safe_path(target, LOCK)).get("source", {"kind": "local"})}
 
 
 def project_root(value):

@@ -1,135 +1,93 @@
-# Codex Best Practice
+# Codex Best Practice 工作台
 
-一套可以带到其他项目的 Codex 工程规范：**规则 + 六个流程技能 + 文档模板 + 接入升级工具 + 本地管理台**。
+通过一条提示词，为其他项目复用整套 Codex 工程体系：**环境准备、规范安装、六个 Skills、模板、版本管理和可视化管理台**。默认从 [GitHub 工作台](https://github.com/matthewdailytools/codexbestpratice) 获取，不依赖原作者电脑上的路径。
 
-目标是让需求、范围、实现、验证与交付保持可控，同时让小任务保持轻量。支持 Windows、macOS、Linux；运行环境为 **Python 3.11+**，无需 pip、Node.js、数据库或 API Key。
-
-## 在其他项目里使用：复制这段话
-
-在另一个项目打开 Codex，将下面提示词发给它。当前电脑可直接复制；其他电脑先克隆本仓库，再替换其中的工具仓库路径。
+## 使用：把这段话发给项目里的 Codex
 
 ```text
-请读取 C:/Users/matth/Desktop/codexbestpratice/.agents/skills/bp-setup/SKILL.md，
-为当前项目接入 Codex Best Practice。
-使用推荐配置，先展示实际文件差异，再由我一次确认后应用。
-保留已有规则与本地修改；未知验证命令标记为待补充。
+请整体引用工作台 https://github.com/matthewdailytools/codexbestpratice，
+为当前项目完成环境准备、规范安装和验证。
+先读取工作台的 WORKBENCH.md。
+只让我选择“默认应用”或“引导设置”，选定后自动完成全部操作。
+保留现有规则与本地修改。
 ```
 
-希望逐项设置时，将“使用推荐配置”换成：
+之后只需选一种模式：
+
+- **默认应用**：采用推荐配置，Codex 自动检查并准备环境、获取工作台、安装全部启用规范并验证。
+- **引导设置**：Codex 提出必要的配置问题，收集答案后自动安装并验证。
+
+如果已明确想用默认设置，可以直接说：
 
 ```text
-请采用引导设置，依次确认项目名称、技术栈、验证命令、修改边界和启用规范，
-最后统一展示文件差异，由我一次确认后应用。
+使用 https://github.com/matthewdailytools/codexbestpratice 工作台，
+按默认模式应用到当前项目，自动完成环境、安装和验证。
 ```
 
-**工具仓库与业务项目是两个目录。** 保留工具仓库供接入与后续升级使用，业务项目只接收自己的规则、技能、模板及接入记录。无需复制整套管理台。
+**无需用户手动 clone、安装 Python 或单个 Skill、复制文件、填写工具路径或运行命令。** Codex 负责这些准备工作；运行环境缺少必要权限或网络受阻时，会说明具体阻塞，不会虚报成功。
 
-首次在另一台电脑准备工具仓库：
+模式选择即授权规范接入。工具会输出实际配置和文件差异，在保护检查通过后自动应用，不再增加第二次日常确认。发现已有文件冲突时停止，不强制覆盖。
 
-```bash
-git clone https://github.com/matthewdailytools/codexbestpratice.git
-```
-
-## 启动规范管理界面
-
-在本仓库执行：
-
-```bash
-python scripts/codex_bp.py serve --open
-```
-
-也可从任意目录使用脚本绝对路径。服务自动选择空闲端口并打开浏览器，终端显示实际地址；按 `Ctrl+C` 停止。macOS/Linux 如果命令名为 `python3`，将示例中的 `python` 换成 `python3`。
+## 整个工作台如何使用
 
 ![规范管理台](UI_PREVIEW.jpg)
 
-管理台提供：
+在项目中直接对 Codex 说：
 
-- **规范库**：搜索、新建、编辑、启用或停用常驻规则、Skills 和模板。
-- **规范编辑**：设置表单 + Markdown 正文、实时预览、保存前差异。
-- **项目管理**：登记本地目录，快速接入或引导设置，修改配置、检查状态和预览升级。
-- **版本管理**：查看草稿差异、创建不可覆盖的版本、查看历史和复制历史内容为新草稿。
-- **使用指南**：复制自动带入本机工具仓库路径的接入提示词。
+| 想做什么 | 提示词 |
+| --- | --- |
+| 首次应用 | 整体引用上述工作台，按默认模式应用到当前项目 |
+| 自定义设置 | 使用该工作台，通过引导模式为当前项目配置规范 |
+| 打开管理界面 | 打开这个工作台的管理台，并自动关联当前项目 |
+| 修改配置 | 调整当前项目的工作台配置，将修改边界增加为…… |
+| 更新项目规范 | 从 GitHub 检查这个项目的工作台更新，并应用新规范 |
+| 查看状态 | 检查当前项目的工作台版本、来源和接入状态 |
 
-在“项目管理”输入另一个项目的已有目录，点击“登记项目”。登记仅记录本机路径，随后点击“一键确认接入”或“引导设置”，检查差异后确认应用。
+管理台支持规范搜索、新建、Markdown 编辑与预览、项目设置、历史版本和升级。项目应用默认使用 GitHub 来源；本地规范库仅作为高级选项，用于离线或草稿验证。
 
-## 接入后会得到什么
+## 日常开发
+
+小任务直接描述目标即可，不需要每次执行完整流程。
+
+| 技能 | 用途 |
+| --- | --- |
+| `$bp-setup` | 工作台引用、环境准备、接入、设置、更新 |
+| `$bp-plan` | 需求澄清、复杂任务计划 |
+| `$bp-implement` | 实现与相称的验证 |
+| `$bp-review` | 根据实际差异查找缺陷 |
+| `$bp-handoff` | 交付、长任务交接与恢复 |
+| `$bp-retro` | 基于真实问题改进规范 |
+
+自动识别的验证命令保持“待确认”；确认命令入口不代表测试通过。工作台安装本身不会执行业务项目命令。
+
+## 项目中保存哪些内容
 
 ```text
 你的项目/
-├── AGENTS.md                    # 在原文件中添加受管区块，保留原内容
-├── .agents/skills/bp-*/SKILL.md   # 六个按需使用的技能
+├── AGENTS.md                    # 只管理有标记的区块，保留原规则
+├── .agents/skills/bp-*/SKILL.md   # 六个流程技能
 └── .codex-bp/
-    ├── project.json             # 项目自己的配置，升级时保留
-    ├── lock.json                # 接入版本与受管内容哈希
+    ├── project.json             # 项目自己的配置，更新时保留
+    ├── lock.json                # 规范版本、GitHub commit、内容哈希
     └── templates/*.md           # 五类文档模板
 ```
 
-这些文件可随业务项目提交到版本库，供团队使用。本机项目登记路径在工具仓库 `.local/` 内，已加入 Git 忽略。
+整套工作台在项目外自动缓存，业务仓库不需要嵌入管理台代码。已安装项目固定到具体 commit 和规范版本；检查、修改配置不会悄悄升级，明确更新时才重新获取 GitHub。
 
-`AGENTS.md` 在新会话中加载；Skills 通常自动发现。如未出现，重新打开该项目的 Codex 会话。存在非空 `AGENTS.override.md` 时，工具会提示其遮蔽问题并停止接入。
+项目专属约定放在项目配置的修改边界或 `AGENTS.md` 受管区块之外。直接修改受管 Skills、模板或区块会触发冲突保护。
 
-## 日常使用
+## 共享规范维护
 
-小任务直接描述目标即可，不必按顺序调用所有技能。复杂任务或特定流程可以明确调用：
+对 Codex 描述要修改的规范即可。共享修改先保存草稿，再创建新版本并按本次授权同步到 GitHub。其他项目明确更新时才应用；不会实时改变所有项目。
 
-| 入口 | 用途 | 提示词示例 |
-| --- | --- | --- |
-| `$bp-plan` | 需求澄清、规划 | 为订单导出功能明确范围、验收与实现计划 |
-| `$bp-implement` | 实现与验证 | 按已确定计划完成导出并验证 |
-| `$bp-review` | 变更评审 | 评审当前差异，优先找可复现缺陷 |
-| `$bp-handoff` | 交付、续接 | 整理当前任务状态、验证与剩余工作 |
-| `$bp-retro` | 复盘、规范改进 | 根据这次实际问题提出最小规范改进 |
-| `$bp-setup` | 接入、配置、升级 | 使用工具仓库预览本项目规范升级 |
+旧版 0.1.0 保持原样，0.1.1 起的接入技能默认使用提示词驱动的 GitHub 工作台入口。
 
-自动识别的验证命令默认 `confirmed: false`。它表示命令入口尚待核实，不表示执行失败；`confirmed: true` 也不表示测试通过。接入、升级、管理台启动均不会执行项目命令。
+## 文档
 
-## 后续修改与升级
-
-1. 在规范库修改正文或元信息，预览并保存草稿。
-2. 在版本管理查看草稿差异并创建新版本；初始版本为 `0.1.0`。
-3. 在项目管理选择“预览升级”，检查差异后确认应用。
-
-也可以在业务项目对 Codex 说：
-
-```text
-使用位于 C:/Users/matth/Desktop/codexbestpratice 的工具仓库，
-为当前项目预览 Codex Best Practice 规范升级，展示差异后由我确认应用。
-保留项目配置和已有本地修改。
-```
-
-GitHub 有更新时，在工具仓库确认本地工作区状态后正常拉取。目标项目的规则不会因此自动变化，仍需显式预览升级。
-
-**需要项目专属约定**：优先通过“修改配置”填写修改边界，或写入 `AGENTS.md` 受管区块之外。直接修改受管 Skills、模板或受管区块会被识别为本地冲突；请先将差异移入项目约定或共享草稿，再重新预览。工具不提供强制覆盖。
-
-## 命令行使用
-
-```bash
-# 只读预览；--out 必须放在目标项目之外
-python scripts/codex_bp.py preview --operation init --target /path/to/project --out /tmp/bp-plan.json
-
-# 核对计划中的 conflicts、config 与 changes，确认后应用
-python scripts/codex_bp.py apply --plan /tmp/bp-plan.json
-
-# 检查接入状态
-python scripts/codex_bp.py check --target /path/to/project
-
-# 预览升级；只调整配置时 operation 使用 configure
-python scripts/codex_bp.py preview --operation upgrade --target /path/to/project --out /tmp/bp-upgrade.json
-
-# 从草稿创建本地不可变版本；不会执行 git commit 或 push
-python scripts/codex_bp.py release --version 0.1.1
-```
-
-Windows 可将 `/tmp/bp-plan.json` 替换为 `$env:TEMP/bp-plan.json`；包含空格的路径加引号。使用 `--settings` 传入 [项目配置示例](examples/project-settings.json)，可省略无需覆盖的字段。退出码 `0` 表示成功，`2` 表示冲突、待接入或输入问题，`1` 表示 I/O 等执行失败。
-
-## 文档与验证
-
+- [工作台自动执行入口与环境准备](WORKBENCH.md)
 - [完整工程实践](BEST_PRACTICES.md)
-- [开发与接口说明](DEVELOPMENT.md)
+- [开发接口与可选命令行入口](DEVELOPMENT.md)
 - [验证记录与实际限制](VALIDATION.md)
+- [项目配置示例](examples/project-settings.json)
 
-```bash
-python -m unittest discover -s tests -v
-```
-
-后端与 CLI 只使用 Python 标准库。前端随包提供 `markdown-it 15.0.3`，运行时不连接 CDN，原始 HTML 不执行；第三方许可证及来源记录在 `web/vendor/`。
+实现基于 Python 3.11+ 标准库，环境由 Codex 自动检查和准备。无需 pip、Git、Node.js、数据库或 API Key。前端随包提供固定版本 Markdown 渲染器，运行时不连接 CDN。

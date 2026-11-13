@@ -10,13 +10,16 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit
 
 from .core import BPError, GUARD, Toolkit, digest, json_bytes, safe_path
+from .sources import REPOSITORY, for_operation, for_project, github_toolkit
 
 
 class LocalServer(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, toolkit, port=0):
+    def __init__(self, toolkit, port=0, cache_dir=None, project_id=None):
         self.toolkit = toolkit
+        self.cache_dir = cache_dir
+        self.project_id = project_id
         self.token = secrets.token_urlsafe(32)
         self.plans = {}
         super().__init__(("127.0.0.1", port), Handler)
@@ -83,14 +86,15 @@ class Handler(BaseHTTPRequestHandler):
                 projects = []
                 for item in tool.project_list():
                     try:
-                        status = tool.check(item["path"])
+                        status = for_project(tool, item["path"], self.server.cache_dir).check(item["path"])
                     except (BPError, OSError, ValueError) as exc:
                         status = {"installed": False, "ok": False, "issues": [str(exc)]}
                     projects.append({**item, "status": status})
                 self.send(200, {"token": self.server.token, "catalog": items,
                                 "catalog_hash": digest(json_bytes(items)), "projects": projects,
                                 "releases": tool.releases(), "next_version": tool.next_version(),
-                                "draft_diff": tool.draft_diff(), "toolkit_path": str(tool.root)})
+                                "draft_diff": tool.draft_diff(), "toolkit_path": str(tool.root),
+                                "repository": REPOSITORY, "project_id": self.server.project_id})
             elif path.startswith("/api/releases/"):
                 version = unquote(path.removeprefix("/api/releases/"))
                 manifest, _ = tool.snapshot(version)
@@ -125,21 +129,28 @@ class Handler(BaseHTTPRequestHandler):
                 elif path == "/api/detect":
                     target = tool.registered(data.get("project_id"))
                     result = tool.detect(target)
+                elif path == "/api/sources/github":
+                    selected = github_toolkit(data.get("ref") or "main", self.server.cache_dir)
+                    manifest, _ = selected.snapshot(data.get("version"))
+                    result = {"source": selected.source, "version": manifest["version"], "catalog": manifest["catalog"]}
                 elif path == "/api/plans":
                     target = tool.registered(data.get("project_id"))
-                    plan = tool.preview(data.get("operation"), target, data.get("settings"), data.get("version"))
+                    selected = for_operation(tool, target, data.get("operation"), data.get("source", "github"),
+                                             data.get("ref"), self.server.cache_dir)
+                    plan = selected.preview(data.get("operation"), target, data.get("settings"), data.get("version"))
                     ident = secrets.token_urlsafe(18)
                     if len(self.server.plans) >= 100:
                         self.server.plans.pop(next(iter(self.server.plans)))
-                    self.server.plans[ident] = plan
+                    self.server.plans[ident] = (selected, plan)
                     result = {**plan, "id": ident}
                 elif path.startswith("/api/plans/") and path.endswith("/apply"):
                     ident = path[len("/api/plans/"):-len("/apply")]
-                    plan = self.server.plans.get(ident)
-                    if not plan:
+                    stored = self.server.plans.get(ident)
+                    if not stored:
                         raise BPError("计划不存在或已应用，请重新预览", 409)
+                    selected, plan = stored
                     tool.registered(next((p["id"] for p in tool.project_list() if p["path"] == plan["target"]), None))
-                    result = tool.apply(plan)
+                    result = selected.apply(plan)
                     del self.server.plans[ident]
                 elif path == "/api/releases":
                     if data.get("catalog_hash") != digest(json_bytes(tool.catalog())):
@@ -156,10 +167,12 @@ class Handler(BaseHTTPRequestHandler):
             self.send(400, {"error": f"请求无法处理: {exc}"})
 
 
-def serve(toolkit=None, port=0, open_browser=False):
+def serve(toolkit=None, port=0, open_browser=False, target=None):
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    server = LocalServer(toolkit or Toolkit(), port)
+    toolkit = toolkit or Toolkit()
+    project_id = toolkit.register(str(target))["id"] if target else None
+    server = LocalServer(toolkit, port, project_id=project_id)
     print(f"Codex Best Practice: {server.origin}", flush=True)
     print("仅本机访问。按 Ctrl+C 停止。", flush=True)
     if open_browser:

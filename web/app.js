@@ -4,7 +4,7 @@ const $ = (selector, scope = document) => scope.querySelector(selector);
 const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const kindNames = {rule:"常驻规则", skill:"流程技能", template:"文档模板"};
 const kindIcons = {rule:"⌘", skill:"⌁", template:"▤"};
-const S = {data:null, page:"library", filter:"all", query:"", edit:null, dirty:false, wizard:null, modalAction:null, busy:false};
+const S = {data:null, page:"library", filter:"all", query:"", edit:null, dirty:false, wizard:null, modalAction:null, busy:false, source:"github"};
 const md = window.markdownit ? window.markdownit({html:false, linkify:false, breaks:false}) : null;
 // Preview never retrieves remote or local file images from user-authored Markdown.
 if (md) md.renderer.rules.image = (tokens, index) => `<span class="muted">[图片：${esc(tokens[index].content)}]</span>`;
@@ -26,7 +26,9 @@ function toast(message, error = false) {
   S.toastTimer = setTimeout(() => element.classList.remove("show"), error ? 7000 : 4000);
 }
 async function reload(render = true) {
+  const firstLoad = !S.data;
   S.data = await api("/api/state");
+  if (firstLoad && S.data.project_id) S.page = "projects";
   $("#nav-count").textContent = S.data.catalog.length;
   $("#footer-version").textContent = `规范版本 ${S.data.releases.at(-1)?.version || "尚未创建"}`;
   if (render) renderPage();
@@ -64,8 +66,8 @@ function renderEditor() {
 }
 function renderProjects() {
   $("#main").innerHTML = head("PROJECT WORKSPACE", "项目管理", "将规范接入本地项目，独立配置、固定版本、按需升级。") +
-    `<section class="panel"><div class="panel-head"><div><h2>接入一个项目</h2><p>先登记已有目录；登记不会修改项目文件。</p></div><span class="badge">跨技术栈</span></div><form id="register-form" class="form-row"><label class="field">本地项目路径<input name="path" required placeholder="例如 C:\\Projects\\my-app 或 /Users/me/projects/my-app"></label><button class="button primary" type="submit">登记项目 ＋</button></form></section>` +
-    (S.data.projects.length ? S.data.projects.map(p=>`<section class="panel"><div class="row between"><h2>${esc(p.status.config?.project_name || p.name)}</h2><span class="badge ${p.status.ok?"":"warn"}">${p.status.installed ? p.status.ok?"已接入":"需要处理" : "待接入"}</span></div><div class="project-path">${esc(p.path)}</div><div class="project-info"><span>当前版本 <strong>${esc(p.status.version || "—")}</strong></span><span>最新版本 ${esc(latest() || "—")}</span><span>${esc(p.status.config?.stack?.join(" / ") || "技术栈待配置")}</span></div>${p.status.installed && p.status.issues?.length ? p.status.issues.map(i=>notice(i,true)).join("") : ""}${(p.status.notes||[]).map(i=>notice(i)).join("")}<div class="project-actions">${p.status.installed ? `<button class="button small" data-action="configure" data-id="${p.id}">修改配置</button><button class="button small primary" data-action="upgrade" data-id="${p.id}">预览升级 ↗</button>` : `<button class="button small primary" data-action="quick" data-id="${p.id}">一键确认接入 ↗</button><button class="button small" data-action="guided" data-id="${p.id}">引导设置</button>`}<button class="button small" data-action="check" data-id="${p.id}">检查状态</button></div></section>`).join("") : '<div class="empty"><h2>让第一个项目用上好规范</h2><p>在上方填写项目路径，即可预览接入内容。</p></div>');
+    `<section class="panel"><div class="panel-head"><div><h2>将工作台应用到项目</h2><p>默认从 GitHub 引用整套工作台。选择默认应用或引导设置，自动完成并验证。</p></div><span class="badge">GitHub 工作台</span></div><form id="register-form" class="form-row"><label class="field">本地项目路径<input name="path" required placeholder="例如 C:\\Projects\\my-app 或 /Users/me/projects/my-app"></label><button class="button primary" type="submit">登记项目 ＋</button></form><details><summary class="muted">高级设置（可选）</summary><label class="field">规范来源<select id="install-source"><option value="github" ${S.source==="github"?"selected":""}>GitHub 工作台（默认）</option><option value="local" ${S.source==="local"?"selected":""}>本地规范库（离线或草稿验证）</option></select></label></details></section>` +
+    (S.data.projects.length ? S.data.projects.map(p=>`<section class="panel"><div class="row between"><h2>${esc(p.status.config?.project_name || p.name)}</h2><span class="badge ${p.status.ok?"":"warn"}">${p.status.installed ? p.status.ok?"已接入":"需要处理" : "待接入"}</span></div><div class="project-path">${esc(p.path)}</div><div class="project-info"><span>当前版本 <strong>${esc(p.status.version || "—")}</strong></span><span>规范来源 ${p.status.source?.kind==="github" ? "GitHub · "+esc(p.status.source.commit.slice(0,7)) : p.status.installed ? "本地库" : "GitHub（默认）"}</span><span>可用更新 ${S.source==="github" ? "应用时检查 GitHub" : esc(latest() || "—")}</span><span>${esc(p.status.config?.stack?.join(" / ") || "技术栈待配置")}</span></div>${p.status.installed && p.status.issues?.length ? p.status.issues.map(i=>notice(i,true)).join("") : ""}${(p.status.notes||[]).map(i=>notice(i)).join("")}<div class="project-actions">${p.status.installed ? `<button class="button small" data-action="configure" data-id="${p.id}">修改配置</button><button class="button small primary" data-action="upgrade" data-id="${p.id}">应用最新工作台 ↗</button>` : `<button class="button small primary" data-action="quick" data-id="${p.id}">默认应用 ↗</button><button class="button small" data-action="guided" data-id="${p.id}">引导设置</button>`}<button class="button small" data-action="check" data-id="${p.id}">检查状态</button></div></section>`).join("") : '<div class="empty"><h2>让第一个项目用上好规范</h2><p>在上方填写项目路径，即可预览接入内容。</p></div>');
 }
 function renderVersions() {
   const changes = S.data.draft_diff;
@@ -73,11 +75,11 @@ function renderVersions() {
     `<section class="panel"><div class="panel-head"><div><h2>当前草稿</h2><p>相比 ${esc(latest() || "空规范库")} 有 ${changes.length} 个文件变化。</p></div><span class="badge ${changes.length?"warn":""}">${changes.length?"有未发布修改":"与最新版本一致"}</span></div>${diffs(changes)}<form id="release-form" class="form-row"><label class="field">新版本号<input name="version" pattern="[0-9]+\.[0-9]+\.[0-9]+" required value="${esc(S.data.next_version)}"></label><button class="button primary" ${!changes.length?"disabled":""}>创建规范版本 ↗</button></form><p class="muted">创建本地版本快照，不会提交 Git、上传云端或升级其他项目。</p></section><section class="panel"><h2>版本历史</h2>${S.data.releases.slice().reverse().map((r,n)=>`<div class="version-row"><div><div class="row"><span class="version-name">v${esc(r.version)}</span>${n===0?'<span class="badge">最新版本</span>':""}</div><div class="version-meta">${esc(new Date(r.created_at).toLocaleString("zh-CN"))} · ${r.items} 项规范 · 不可覆盖</div></div><button class="button small" data-action="version" data-id="${r.version}">查看版本</button></div>`).join("") || '<div class="empty">尚无版本，请创建首个版本。</div>'}</section>`;
 }
 function setupPrompt() {
-  return `请读取 ${S.data.toolkit_path}/.agents/skills/bp-setup/SKILL.md，为当前项目接入 Codex Best Practice。使用推荐配置，先展示实际文件差异，再由我一次确认后应用。保留已有规则与本地修改。`;
+  return `请整体引用工作台 ${S.data.repository}，为当前项目完成环境准备、规范安装和验证。只让我选择“默认应用”或“引导设置”，选定后自动完成全部操作；保留现有规则与本地修改。请先读取工作台的 WORKBENCH.md。`;
 }
 function renderGuide() {
   $("#main").innerHTML = head("GETTING STARTED", "把规范带到其他项目", "从一句提示词开始；项目接入之后，即可按需调用流程技能。") +
-    `<div class="guide-grid"><section class="panel"><div class="guide-step">01 / 在 CODEX 对话中使用</div><h2>复制提示词，接入当前项目</h2><p>在另一个项目打开 Codex，把下面这段话发给它。工具仓库需保留在本机。</p><pre class="copy-block">${esc(setupPrompt())}</pre><button class="button primary" data-action="copy-prompt">复制接入提示词 ↗</button></section><section class="panel"><div class="guide-step">02 / 在管理台中使用</div><h2>选择最适合你的设置方式</h2><p>项目管理中填写目录后，可直接采用推荐配置，或通过引导逐项调整。先看差异，再确认写入。</p><div class="notice">未知验证命令保持待补充。自动识别的命令默认待确认；设置过程不会执行项目命令。</div><a href="#projects" class="button">前往项目管理 ↗</a></section><section class="panel"><div class="guide-step">03 / 日常开发</div><h2>按任务调用，不增加多余流程</h2><div class="markdown">${markdown("- `$bp-plan`：复杂需求与任务计划\n- `$bp-implement`：实现与验证\n- `$bp-review`：变更评审\n- `$bp-handoff`：交付与长任务交接\n- `$bp-retro`：基于证据改进规范\n\n小任务可直接描述目标，不必逐个调用技能。")}</div></section><section class="panel"><div class="guide-step">04 / 后续升级</div><h2>规范变好，项目按需跟进</h2><p>规范库编辑 → 保存草稿 → 创建新版本 → 项目管理中预览升级 → 确认应用。</p><div class="notice">已有 AGENTS.md 保留受管区块外内容。受管文件被本地修改时，工具会停止升级并展示冲突。</div><p>完整说明见仓库 README.md 与 BEST_PRACTICES.md。</p></section></div>`;
+    `<div class="guide-grid"><section class="panel"><div class="guide-step">01 / 在 CODEX 对话中使用</div><h2>一条提示词，完成全部操作</h2><p>在另一个项目打开 Codex，把下面这段话发给它。无需手动准备环境或 clone 仓库。</p><pre class="copy-block">${esc(setupPrompt())}</pre><button class="button primary" data-action="copy-prompt">复制接入提示词 ↗</button></section><section class="panel"><div class="guide-step">02 / 在管理台中使用</div><h2>选择最适合你的设置方式</h2><p>由 Codex 自动选中当前项目。选择默认应用，或通过引导逐项调整，工作台会自动安装并验证。</p><div class="notice">未知验证命令保持待补充。自动识别的命令默认待确认；设置过程不会执行项目命令。</div><a href="#projects" class="button">前往项目管理 ↗</a></section><section class="panel"><div class="guide-step">03 / 日常开发</div><h2>按任务调用，不增加多余流程</h2><div class="markdown">${markdown("- `$bp-plan`：复杂需求与任务计划\n- `$bp-implement`：实现与验证\n- `$bp-review`：变更评审\n- `$bp-handoff`：交付与长任务交接\n- `$bp-retro`：基于证据改进规范\n\n小任务可直接描述目标，不必逐个调用技能。")}</div></section><section class="panel"><div class="guide-step">04 / 后续升级</div><h2>规范变好，项目按需跟进</h2><p>共享规范更新到 GitHub 后，对 Codex 说“更新这个项目的工作台规范”，即可自动检查并应用新版本。</p><div class="notice">已有 AGENTS.md 保留受管区块外内容。受管文件被本地修改时，工具会停止升级并展示冲突。</div><p>完整说明见仓库 README.md 与 BEST_PRACTICES.md。</p></section></div>`;
 }
 function dialog(title, subtitle, body, buttons, action) {
   S.modalAction = action || null;
@@ -104,15 +106,22 @@ function previewSave() {
 }
 async function startSetup(id, mode, operation) {
   const p = project(id);
-  if (!latest()) throw new Error("请先在版本管理中创建规范版本");
-  const version = operation === "configure" ? p.status.version : latest();
-  const snapshot = await api(`/api/releases/${version}`);
+  const source = operation === "configure" ? p.status.source?.kind || "local" : S.source;
+  let version = operation === "configure" ? p.status.version : latest();
+  let catalog, ref;
+  if (source === "github") {
+    const upstream = await api("/api/sources/github", {ref:operation === "configure" ? p.status.source.commit : "main", version:operation === "configure" ? version : undefined});
+    version = upstream.version; catalog = upstream.catalog; ref = upstream.source.commit;
+  } else {
+    if (!version) throw new Error("本地规范库暂无版本，请先创建版本或使用默认 GitHub 来源");
+    catalog = (await api(`/api/releases/${version}`)).manifest.catalog;
+  }
   const detected = p.status.installed ? p.status.config : await api("/api/detect", {project_id:id});
-  const active = snapshot.manifest.catalog.filter(i=>i.enabled);
+  const active = catalog.filter(i=>i.enabled);
   const settings = {...detected, enabled_ids:detected.enabled_ids?.filter(i=>active.some(a=>a.id===i)) || active.map(i=>i.id)};
   delete settings.notes;
-  S.wizard = {id, operation, version, step:0, settings:structuredClone(settings), catalog:active};
-  if (mode === "quick") await previewProject(null);
+  S.wizard = {id, operation, version, step:0, settings:structuredClone(settings), catalog:active, source, ref};
+  if (mode === "quick") await previewProject(null, true);
   else renderWizard();
 }
 function collectWizard() {
@@ -134,18 +143,25 @@ function renderWizard() {
   if (w.step===1) content=`<p class="muted">勾选“已核实”表示已确认命令入口，不表示已经运行或通过。</p>${c.checks.map((check,n)=>`<div class="check-row"><label class="field">名称<input name="name-${n}" required value="${esc(check.name)}"></label><label class="field">命令<input name="command-${n}" required value="${esc(check.command)}"></label><label class="checkbox"><input type="checkbox" name="confirmed-${n}" ${check.confirmed?"checked":""}>已核实</label></div>`).join("") || notice("尚无验证命令，可以留空。日常任务中按实际情况补充。") }<button type="button" class="button small" data-action="add-check">＋ 添加命令</button>`;
   if (w.step===2) content=`<label class="field">修改边界与项目约定<textarea name="boundaries" rows="7" placeholder="每行一条，例如：数据库迁移需要先说明兼容方案">${esc(c.boundaries.join("\n"))}</textarea><small>这是代理应遵守的文字约定，不替代运行环境权限。</small></label>`;
   if (w.step===3) content=`<div class="check-options">${w.catalog.map(i=>`<label class="checkbox"><input type="checkbox" name="enabled" value="${i.id}" ${c.enabled_ids.includes(i.id)?"checked":""}><span>${esc(i.title)}<small>${kindNames[i.kind]}</small></span></label>`).join("")}</div>`;
-  dialog(w.operation==="configure"?"修改项目配置":"引导设置", `${project(w.id).name} · 规范版本 ${w.version}`, `<div class="steps">${["项目信息","验证命令","修改边界","启用规范"].map((name,n)=>`<span class="step ${n===w.step?"active":""}"><b>${n+1}</b>${name}</span>`).join("")}</div><form id="wizard-form">${content}</form>`, `<button class="button" data-action="${w.step?"previous-step":"close"}">${w.step?"上一步":"取消"}</button><button class="button primary" data-action="next-step">${w.step===3?"预览文件差异 ↗":"下一步 →"}</button>`);
+  dialog(w.operation==="configure"?"修改项目配置":"引导设置", `${project(w.id).name} · 规范版本 ${w.version}`, `<div class="steps">${["项目信息","验证命令","修改边界","启用规范"].map((name,n)=>`<span class="step ${n===w.step?"active":""}"><b>${n+1}</b>${name}</span>`).join("")}</div><form id="wizard-form">${content}</form>`, `<button class="button" data-action="${w.step?"previous-step":"close"}">${w.step?"上一步":"取消"}</button><button class="button primary" data-action="next-step">${w.step===3?"完成设置并应用 ↗":"下一步 →"}</button>`);
 }
-async function previewProject(settings) {
+async function previewProject(settings, autoApply = false) {
   const w = S.wizard;
-  const plan = await api("/api/plans", {project_id:w.id, operation:w.operation, version:w.version, settings});
+  const plan = await api("/api/plans", {project_id:w.id, operation:w.operation, version:w.version, settings, source:w.source, ref:w.ref});
   const checks=plan.config.checks;
   const summary=`<div class="summary-grid"><span>目标项目</span><strong>${esc(plan.config.project_name)}</strong><span>目录</span><strong>${esc(plan.target)}</strong><span>规范版本</span><strong>${esc(plan.version)}</strong><span>技术栈</span><strong>${esc(plan.config.stack.join(" / ") || "待补充")}</strong><span>文件变更</span><strong>${plan.changes.length} 项</strong><span>验证命令</span><strong>${checks.length ? checks.map(c=>`${esc(c.command)} ${c.confirmed?"（已核实）":"（待确认）"}`).join("<br>") : "待补充"}</strong></div>`;
-  dialog(plan.operation==="upgrade"?"确认规范升级":plan.operation==="configure"?"确认配置变更":"确认接入项目", "预览不会修改项目。请检查以下实际差异后确认一次。", summary + (checks.some(c=>!c.confirmed)||!checks.length?notice("验证命令尚未完整核实；接入过程不会执行这些命令。建议在实际开发时结合项目清单确认。 "):"") + plan.conflicts.map(c=>notice(c,true)).join("") + diffs(plan.changes), `<button class="button" data-action="close">取消</button><button class="button" data-action="wizard-from-preview">调整设置</button><button class="button primary" data-action="confirm" ${plan.conflicts.length?"disabled":""}>${plan.conflicts.length?"请先处理冲突":plan.changes.length?"确认应用":"确认 · 已是当前配置"}</button>`, async()=>{
+  dialog(plan.operation==="upgrade"?"确认规范升级":plan.operation==="configure"?"确认配置变更":"确认接入项目", (autoApply ? "按所选模式自动应用并验证；冲突时保留项目文件。" : "预览不会修改项目。请检查差异后确认。"), summary + (checks.some(c=>!c.confirmed)||!checks.length?notice("验证命令尚未完整核实；接入过程不会执行这些命令。建议在实际开发时结合项目清单确认。 "):"") + plan.conflicts.map(c=>notice(c,true)).join("") + diffs(plan.changes), `<button class="button" data-action="close">取消</button><button class="button" data-action="wizard-from-preview">调整设置</button><button class="button primary" data-action="confirm" ${plan.conflicts.length?"disabled":""}>${plan.conflicts.length?"请先处理冲突":plan.changes.length?"确认应用":"确认 · 已是当前配置"}</button>`, async()=>{
     const result = await api(`/api/plans/${plan.id}/apply`, {});
     closeDialog(); await reload(); toast(`已完成，规范版本 ${result.version}，变更 ${result.changed} 个文件。`);
   });
   w.settings = structuredClone(plan.config);
+  if (autoApply && !plan.conflicts.length) {
+    $("#modal-title").textContent = "正在应用工作台";
+    $("#modal .modal-foot").innerHTML = '<button class="button primary" disabled>自动应用并验证…</button>';
+    const result = await api(`/api/plans/${plan.id}/apply`, {});
+    closeDialog(); await reload();
+    toast(`工作台已应用，版本 ${result.version}，变更 ${result.changed} 个文件。`);
+  }
 }
 async function showVersion(version) {
   const result = await api(`/api/releases/${version}`);
@@ -171,17 +187,19 @@ document.addEventListener("click", async event=>{
     else if(action==="confirm" && S.modalAction) {
       S.busy=true;button.disabled=true;await S.modalAction();
     } else if(["quick","guided","configure","upgrade"].includes(action)) {
+      S.busy=true;
+      dialog("正在准备工作台", "自动获取所需内容，保留项目现有约定。", '<div class="loading">正在准备…</div>', '<button class="button" disabled>请稍候…</button>');
       await startSetup(id,action==="guided"||action==="configure"?"guided":"quick",action==="upgrade"?"upgrade":action==="configure"?"configure":"init");
     } else if(action==="check") {await reload();const p=project(id);toast(p.status.ok?`检查通过，当前版本 ${p.status.version}${p.status.notes?.length?"；部分配置待补充":""}`:p.status.issues.join("；"),!p.status.ok);}
     else if(action==="add-check") {collectWizard();S.wizard.settings.checks.push({name:"",command:"",confirmed:false});renderWizard();}
     else if(action==="next-step") {
       if(!$("#wizard-form").reportValidity())return;
-      collectWizard();if(S.wizard.step===3)await previewProject(S.wizard.settings);else{S.wizard.step++;renderWizard();}
+      collectWizard();if(S.wizard.step===3){S.busy=true;await previewProject(S.wizard.settings,true);}else{S.wizard.step++;renderWizard();}
     } else if(action==="previous-step") {collectWizard();S.wizard.step--;renderWizard();}
     else if(action==="wizard-from-preview") {S.wizard.step=0;renderWizard();}
     else if(action==="version") await showVersion(id);
     else if(action==="copy-prompt") {await navigator.clipboard.writeText(setupPrompt());toast("提示词已复制，可发送到另一个项目的 Codex 对话。");}
-  } catch(error){toast(error.message,true);} finally{S.busy=false; if(button.isConnected && action==="confirm")button.disabled=false;}
+  } catch(error){if($("#modal-title")?.textContent.startsWith("正在"))closeDialog();toast(error.message,true);} finally{S.busy=false; if(button.isConnected && action==="confirm")button.disabled=false;}
 });
 document.addEventListener("submit", async event=>{
   event.preventDefault();
@@ -207,6 +225,7 @@ document.addEventListener("input", event=>{
     if(event.target.name==="body")$("#md-preview").innerHTML=markdown(event.target.value);
   }
 });
+document.addEventListener("change",event=>{if(event.target.id==="install-source")S.source=event.target.value;});
 function navigate(page) {
   if(S.dirty && !confirm("有未保存的规范修改，确定离开吗？"))return;
   S.dirty=false;S.page=["library","projects","versions","guide"].includes(page)?page:"library";renderPage();
