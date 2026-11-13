@@ -1,6 +1,6 @@
 # 工作台引用入口
 
-这是可以整体引用的 Codex Best Practice 工作台。默认来源为 https://github.com/matthewdailytools/codexbestpratice 。用户无需手动准备环境、clone 仓库、安装单个 Skill、复制模板或填写工具路径。
+这是可以整体引用的 Codex Best Practice 工作台。默认来源为 https://github.com/matthewdailytools/codexbestpratice 。用户无需手动准备环境、clone 仓库、安装单个 Skill、复制模板或填写工具路径。执行过程中，Codex 可按需使用 Git、pip 及其他合适工具。
 
 ## 对用户只提供两个模式
 
@@ -13,7 +13,7 @@
 
 1. 根据当前项目上下文确定目标目录，读取其既有约定；不要将工作台下载到业务项目中。
 2. 检查能运行的 Python 3.11+。可用就复用；缺失时读取下方环境准备说明，自动完成必要安装与验证。不要让用户手动执行命令。
-3. 通过可用的 GitHub 工具或 HTTPS 获取本仓库根文件 `workbench.py`，保存到系统临时目录。它是无额外依赖的独立入口；无需 Git，无需 pip。
+3. 通过可用的 GitHub 工具或 HTTPS 获取本仓库根文件 `workbench.py`，保存到系统临时目录。它是独立入口；所需工具与依赖由 Codex 自动准备，可按需使用 Git 或 pip。
 4. 默认模式由 Codex 调用 `python <临时入口>/workbench.py --target <当前项目> --mode default`。它从 GitHub 获取完整工作台并固定 commit，输出实际差异，执行已有文件保护后应用，再检查结果。
 5. 引导模式先收集设置到临时 JSON，再调用同一入口并传入 `--mode guided --settings <临时JSON>`。不要创建第二套安装流程。
 6. 报告应用版本、GitHub commit、项目验证结果和可用技能。不要向用户暴露下载、缓存、安装命令作为必做步骤。接入本身不执行业务项目的测试命令。

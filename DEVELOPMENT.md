@@ -4,7 +4,7 @@
 
 `scripts/codexbp/core.py` 实现文件保护、目录、版本、识别与接入；`server.py` 暴露 HTTP API；`scripts/codex_bp.py` 提供 CLI；`web/` 是无构建前端。
 
-用户入口是提示词引用整个 GitHub 工作台。`WORKBENCH.md` 描述环境准备与模式选择；根目录 `workbench.py` 是可单独获取的 Python 标准库入口，通过 HTTPS 下载完整工作台，不执行 Git clone，不要求 Git 或 pip。默认模式选择后自动输出差异、应用并验证；引导模式由 Codex 收集设置后调用同一入口。
+用户入口是提示词引用整个 GitHub 工作台。`WORKBENCH.md` 描述环境准备与模式选择；根目录 `workbench.py` 是可单独获取的 Python 标准库入口，通过 HTTPS 下载完整工作台。Codex 可按需要使用 Git、pip 或其他工具准备环境，用户无需手动操作。默认模式选择后自动输出差异、应用并验证；引导模式由 Codex 收集设置后调用同一入口。
 
 `scripts/codexbp/sources.py` 统一 Web 和高级 CLI 的来源选择，默认 GitHub；内部 core 保持可离线、确定性操作。缓存位于用户缓存目录，每个 commit 独立存放；分支先解析为 commit，应用和检查固定到该 commit。读取失败不会静默换成本地旧版。缓存中自行创建的本地版本不视为该 GitHub commit 的已发布版本。
 

@@ -90,4 +90,4 @@
 - [验证记录与实际限制](VALIDATION.md)
 - [项目配置示例](examples/project-settings.json)
 
-实现基于 Python 3.11+ 标准库，环境由 Codex 自动检查和准备。无需 pip、Git、Node.js、数据库或 API Key。前端随包提供固定版本 Markdown 渲染器，运行时不连接 CDN。
+实现基于 Python 3.11+ 标准库，环境由 Codex 自动检查和准备。Codex 可按需使用和准备 Git、pip 等工具，用户无需手动操作。前端随包提供固定版本 Markdown 渲染器，运行时不连接 CDN。
