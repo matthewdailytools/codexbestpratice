@@ -1,5 +1,5 @@
 * text=auto eol=lf
 *.jpg binary
-# Version snapshots are byte-hashed and must survive all Git newline settings.
-releases/** -text whitespace=cr-at-eol
+# The ready-to-copy default folder is byte-hashed.
+default/** -text whitespace=cr-at-eol
 web/vendor/markdown-it.min.js -text

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codex Best Practice · 默认规范</title>
+  <link rel="stylesheet" href="/package.css">
+  <script defer src="/vendor/markdown-it.min.js"></script>
+  <script defer src="/package.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#default/chapter-01"><span class="brand-icon">↗</span><span>codex<small>BEST PRACTICE</small></span></a>
+    <div class="nav-heading">工程规范 <span>按参考文章顺序</span><button id="menu-toggle" aria-controls="navigation" aria-expanded="false">展开目录</button></div>
+    <nav id="navigation" aria-label="规范章节"></nav>
+    <div class="sidebar-foot">一套文件，直接复制到项目根目录。<br>默认只读，另建整套副本后修改。</div>
+  </aside>
+  <div class="workspace">
+    <header class="topbar">
+      <div class="set-picker"><label for="set-picker">当前规范</label><select id="set-picker" aria-label="当前规范"></select><span id="set-badge" class="badge">只读</span></div>
+      <div class="actions"><button id="create-set" class="primary">＋ 新建一套</button><a id="export-set" class="button" download="codex-default.zip">下载整套文件 ↓</a></div>
+    </header>
+    <main id="main"><p class="loading">正在读取规范文件…</p></main>
+    <footer><span>CODEX BEST PRACTICE</span><a id="notes-link" href="#default/notes">版本说明</a><span>仅本机保存</span></footer>
+  </div>
+  <dialog id="create-dialog" aria-labelledby="create-title">
+    <form id="create-form"><div class="dialog-head"><h2 id="create-title">新建一套规范</h2><button type="button" id="close-dialog" aria-label="关闭">×</button></div><p>复制当前整套文件。默认原件保持只读，你可以在新副本中编辑规则和版本说明。</p><label for="set-title">名称</label><input id="set-title" name="title" maxlength="80" required autocomplete="off"><p id="create-error" class="error" role="alert"></p><div class="dialog-actions"><button type="button" id="cancel-create">取消</button><button type="submit" class="primary">创建并打开</button></div></form>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

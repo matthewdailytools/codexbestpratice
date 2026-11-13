@@ -1,9 +1,0 @@
-{
-  "project_name": "示例项目",
-  "stack": ["TypeScript", "React"],
-  "checks": [
-    {"name": "test", "command": "npm run test", "confirmed": false},
-    {"name": "build", "command": "npm run build", "confirmed": false}
-  ],
-  "boundaries": ["沿用项目已有架构与依赖管理方式", "公共接口变化时明确兼容方案"]
-}

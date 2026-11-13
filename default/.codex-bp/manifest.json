@@ -1,0 +1,486 @@
+{
+  "schema_version": 1,
+  "title": "默认规范 1.0",
+  "version": "1.0",
+  "created_at": "2026-11-13",
+  "notes": "VERSION_NOTES.md",
+  "chapters": [
+    {
+      "id": "chapter-01",
+      "title": "一、推荐的整体开发工作流",
+      "path": ".codex-bp/rules/01-workflow.md",
+      "children": [
+        {
+          "id": "chapter-01-1",
+          "title": "01 需求分析",
+          "path": ".codex-bp/rules/03-requirements.md"
+        },
+        {
+          "id": "chapter-01-2",
+          "title": "02 架构规划",
+          "path": ".agents/skills/bp-plan/SKILL.md"
+        },
+        {
+          "id": "chapter-01-3",
+          "title": "03 项目初始化",
+          "path": ".agents/skills/bp-setup/SKILL.md"
+        },
+        {
+          "id": "chapter-01-4",
+          "title": "04 任务拆分",
+          "path": ".codex-bp/rules/04-planning.md"
+        },
+        {
+          "id": "chapter-01-5",
+          "title": "05 编码实现",
+          "path": ".agents/skills/bp-implement/SKILL.md"
+        },
+        {
+          "id": "chapter-01-6",
+          "title": "06 自动化验证",
+          "path": ".codex-bp/rules/06-verification.md"
+        },
+        {
+          "id": "chapter-01-7",
+          "title": "07 代码审查",
+          "path": ".agents/skills/bp-review/SKILL.md"
+        },
+        {
+          "id": "chapter-01-8",
+          "title": "08 交付发布",
+          "path": ".agents/skills/bp-handoff/SKILL.md"
+        },
+        {
+          "id": "chapter-01-prompt-full-task",
+          "title": "完整任务 Prompt",
+          "path": ".codex-bp/prompts/full-task.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-02",
+      "title": "二、项目初始化：先建立 AI 能理解的项目结构",
+      "path": ".codex-bp/rules/02-project-setup.md",
+      "children": [
+        {
+          "id": "chapter-02-1",
+          "title": "AGENTS.md 项目入口",
+          "path": "AGENTS.md"
+        },
+        {
+          "id": "chapter-02-2",
+          "title": "项目事实与检查配置",
+          "path": ".codex-bp/project.json"
+        },
+        {
+          "id": "chapter-02-3",
+          "title": "里程碑目标模板",
+          "path": ".codex-bp/templates/goal-record.md"
+        },
+        {
+          "id": "chapter-02-4",
+          "title": "任务计划模板",
+          "path": ".codex-bp/templates/task-plan.md"
+        },
+        {
+          "id": "chapter-02-prompt-project-analysis",
+          "title": "项目分析 Prompt",
+          "path": ".codex-bp/prompts/project-analysis.md"
+        },
+        {
+          "id": "chapter-02-prompt-project-setup",
+          "title": "项目初始化 Prompt",
+          "path": ".codex-bp/prompts/project-setup.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-03",
+      "title": "三、需求分析",
+      "path": ".codex-bp/rules/03-requirements.md",
+      "children": [
+        {
+          "id": "chapter-03-1",
+          "title": "需求说明模板",
+          "path": ".codex-bp/templates/requirements.md"
+        },
+        {
+          "id": "chapter-03-2",
+          "title": "需求澄清与规划",
+          "path": ".agents/skills/bp-plan/SKILL.md"
+        },
+        {
+          "id": "chapter-03-prompt-requirements",
+          "title": "需求分析 Prompt",
+          "path": ".codex-bp/prompts/requirements.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-04",
+      "title": "四、按照 Milestone 拆分任务",
+      "path": ".codex-bp/rules/04-planning.md",
+      "children": [
+        {
+          "id": "chapter-04-1",
+          "title": "目标与验收",
+          "path": ".codex-bp/templates/goal-record.md"
+        },
+        {
+          "id": "chapter-04-2",
+          "title": "任务计划与依赖",
+          "path": ".codex-bp/templates/task-plan.md"
+        },
+        {
+          "id": "chapter-04-prompt-planning",
+          "title": "任务拆分 Prompt",
+          "path": ".codex-bp/prompts/planning.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-05",
+      "title": "五、建立统一的任务执行模板",
+      "path": ".codex-bp/rules/05-task-execution.md",
+      "children": [
+        {
+          "id": "prompt-full-task",
+          "title": "完整开发任务 Prompt",
+          "path": ".codex-bp/prompts/full-task.md"
+        },
+        {
+          "id": "prompt-project-analysis",
+          "title": "项目分析 Prompt",
+          "path": ".codex-bp/prompts/project-analysis.md"
+        },
+        {
+          "id": "prompt-requirements",
+          "title": "01 需求分析 Prompt",
+          "path": ".codex-bp/prompts/requirements.md"
+        },
+        {
+          "id": "prompt-architecture",
+          "title": "02 架构规划 Prompt",
+          "path": ".codex-bp/prompts/architecture.md"
+        },
+        {
+          "id": "prompt-project-setup",
+          "title": "03 项目初始化 Prompt",
+          "path": ".codex-bp/prompts/project-setup.md"
+        },
+        {
+          "id": "prompt-planning",
+          "title": "04 任务拆分 Prompt",
+          "path": ".codex-bp/prompts/planning.md"
+        },
+        {
+          "id": "prompt-implementation",
+          "title": "05 编码实现 Prompt",
+          "path": ".codex-bp/prompts/implementation.md"
+        },
+        {
+          "id": "prompt-verification",
+          "title": "06 自动化验证 Prompt",
+          "path": ".codex-bp/prompts/verification.md"
+        },
+        {
+          "id": "prompt-review",
+          "title": "07 代码审查 Prompt",
+          "path": ".codex-bp/prompts/review.md"
+        },
+        {
+          "id": "prompt-delivery",
+          "title": "08 交付发布 Prompt",
+          "path": ".codex-bp/prompts/delivery.md"
+        },
+        {
+          "id": "prompt-handoff",
+          "title": "续接与交接 Prompt",
+          "path": ".codex-bp/prompts/handoff.md"
+        },
+        {
+          "id": "prompt-retrospective",
+          "title": "复盘与规范改进 Prompt",
+          "path": ".codex-bp/prompts/retrospective.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-06",
+      "title": "六、测试策略与质量验证",
+      "path": ".codex-bp/rules/06-verification.md",
+      "children": [
+        {
+          "id": "chapter-06-1",
+          "title": "验证记录模板",
+          "path": ".codex-bp/templates/verification-record.md"
+        },
+        {
+          "id": "chapter-06-prompt-verification",
+          "title": "自动化验证 Prompt",
+          "path": ".codex-bp/prompts/verification.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-07",
+      "title": "七、多 Agent 协作",
+      "path": ".codex-bp/rules/07-collaboration.md",
+      "children": []
+    },
+    {
+      "id": "chapter-08",
+      "title": "八、Git 与变更管理",
+      "path": ".codex-bp/rules/08-git.md",
+      "children": [
+        {
+          "id": "chapter-08-1",
+          "title": "变更评审",
+          "path": ".agents/skills/bp-review/SKILL.md"
+        },
+        {
+          "id": "chapter-08-2",
+          "title": "评审报告模板",
+          "path": ".codex-bp/templates/review-report.md"
+        },
+        {
+          "id": "chapter-08-prompt-review",
+          "title": "代码审查 Prompt",
+          "path": ".codex-bp/prompts/review.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-09",
+      "title": "九、安全与权限",
+      "path": ".codex-bp/rules/09-security.md",
+      "children": [
+        {
+          "id": "chapter-09-1",
+          "title": "后端接口、数据与权限",
+          "path": ".agents/skills/bp-backend/SKILL.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-10",
+      "title": "十、Skills、MCP 和自动化",
+      "path": ".codex-bp/rules/10-capabilities.md",
+      "children": [
+        {
+          "id": "chapter-10-1",
+          "title": "bp-backend",
+          "path": ".agents/skills/bp-backend/SKILL.md"
+        },
+        {
+          "id": "chapter-10-2",
+          "title": "bp-handoff",
+          "path": ".agents/skills/bp-handoff/SKILL.md"
+        },
+        {
+          "id": "chapter-10-3",
+          "title": "bp-implement",
+          "path": ".agents/skills/bp-implement/SKILL.md"
+        },
+        {
+          "id": "chapter-10-4",
+          "title": "bp-plan",
+          "path": ".agents/skills/bp-plan/SKILL.md"
+        },
+        {
+          "id": "chapter-10-5",
+          "title": "bp-retro",
+          "path": ".agents/skills/bp-retro/SKILL.md"
+        },
+        {
+          "id": "chapter-10-6",
+          "title": "bp-review",
+          "path": ".agents/skills/bp-review/SKILL.md"
+        },
+        {
+          "id": "chapter-10-7",
+          "title": "bp-setup",
+          "path": ".agents/skills/bp-setup/SKILL.md"
+        },
+        {
+          "id": "chapter-10-8",
+          "title": "bp-ui-android",
+          "path": ".agents/skills/bp-ui-android/SKILL.md"
+        },
+        {
+          "id": "chapter-10-9",
+          "title": "bp-ui-ios",
+          "path": ".agents/skills/bp-ui-ios/SKILL.md"
+        },
+        {
+          "id": "chapter-10-10",
+          "title": "bp-ui-ipados",
+          "path": ".agents/skills/bp-ui-ipados/SKILL.md"
+        },
+        {
+          "id": "chapter-10-11",
+          "title": "bp-ui-macos",
+          "path": ".agents/skills/bp-ui-macos/SKILL.md"
+        },
+        {
+          "id": "chapter-10-12",
+          "title": "bp-ui-web",
+          "path": ".agents/skills/bp-ui-web/SKILL.md"
+        },
+        {
+          "id": "chapter-10-13",
+          "title": "bp-ui-windows",
+          "path": ".agents/skills/bp-ui-windows/SKILL.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-11",
+      "title": "十一、日常开发节奏与交接",
+      "path": ".codex-bp/rules/11-handoff.md",
+      "children": [
+        {
+          "id": "chapter-11-1",
+          "title": "交付与续接",
+          "path": ".agents/skills/bp-handoff/SKILL.md"
+        },
+        {
+          "id": "chapter-11-2",
+          "title": "交接记录模板",
+          "path": ".codex-bp/templates/handoff.md"
+        },
+        {
+          "id": "chapter-11-prompt-handoff",
+          "title": "续接与交接 Prompt",
+          "path": ".codex-bp/prompts/handoff.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-12",
+      "title": "十二、最容易犯的错误与约束",
+      "path": ".codex-bp/rules/12-quality-guardrails.md",
+      "children": [
+        {
+          "id": "chapter-12-1",
+          "title": "复盘与改进",
+          "path": ".agents/skills/bp-retro/SKILL.md"
+        },
+        {
+          "id": "chapter-12-prompt-retrospective",
+          "title": "复盘 Prompt",
+          "path": ".codex-bp/prompts/retrospective.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-13",
+      "title": "十三、推荐的工程配置与完成标准",
+      "path": ".codex-bp/rules/13-done.md",
+      "children": [
+        {
+          "id": "chapter-13-1",
+          "title": "项目配置",
+          "path": ".codex-bp/project.json"
+        },
+        {
+          "id": "chapter-13-2",
+          "title": "验证记录模板",
+          "path": ".codex-bp/templates/verification-record.md"
+        }
+      ]
+    },
+    {
+      "id": "chapter-14",
+      "title": "十四、根据项目类型采用最佳实践",
+      "path": ".codex-bp/rules/14-project-types.md",
+      "children": [
+        {
+          "id": "chapter-14-1",
+          "title": "Web 浏览器",
+          "path": ".agents/skills/bp-ui-web/SKILL.md"
+        },
+        {
+          "id": "chapter-14-2",
+          "title": "iPhone 原生",
+          "path": ".agents/skills/bp-ui-ios/SKILL.md"
+        },
+        {
+          "id": "chapter-14-3",
+          "title": "iPad 原生",
+          "path": ".agents/skills/bp-ui-ipados/SKILL.md"
+        },
+        {
+          "id": "chapter-14-4",
+          "title": "Android",
+          "path": ".agents/skills/bp-ui-android/SKILL.md"
+        },
+        {
+          "id": "chapter-14-5",
+          "title": "Windows 桌面",
+          "path": ".agents/skills/bp-ui-windows/SKILL.md"
+        },
+        {
+          "id": "chapter-14-6",
+          "title": "macOS 桌面",
+          "path": ".agents/skills/bp-ui-macos/SKILL.md"
+        },
+        {
+          "id": "chapter-14-7",
+          "title": "后端服务",
+          "path": ".agents/skills/bp-backend/SKILL.md"
+        }
+      ]
+    }
+  ],
+  "files": {
+    ".agents/skills/bp-backend/SKILL.md": "9a0e5ef7ca87cb3034d401354929bbcf5b106346d492682dd683de25fe679341",
+    ".agents/skills/bp-handoff/SKILL.md": "c022d319596a95089f30216b516a7645589604de83f7ba5184dbf84ca5632056",
+    ".agents/skills/bp-implement/SKILL.md": "04b2385b937d8d1d42766202ba723067b2171f157c90ccebddb9514911ad7b5d",
+    ".agents/skills/bp-plan/SKILL.md": "909a40d4ca4144cc7216734b2050ce143cf8a2379ca050f4259f2277cc91884f",
+    ".agents/skills/bp-retro/SKILL.md": "6268c224129a0d575b7a83376083ec55aeea1f23addb4e67a240e317ffe56ef8",
+    ".agents/skills/bp-review/SKILL.md": "296c7ac8c54ace57f57a28aee774190bfb9eaced381e6f57465aa7770404eb1c",
+    ".agents/skills/bp-setup/SKILL.md": "ca6d99e3590fd38d7dd21484e93b8bf2dd1de9f25ff0cb5d8cf53e3d8a286539",
+    ".agents/skills/bp-ui-android/SKILL.md": "76d942f4642759306e5cbcba7ca486cb0ad557788b4ac4725f1a4f40b2a1b526",
+    ".agents/skills/bp-ui-ios/SKILL.md": "50a0b8da7493789c10a9862ee94bbe906067035a1a7b305e292b9503b8b435ee",
+    ".agents/skills/bp-ui-ipados/SKILL.md": "6080afcd3f4b0701d84d1d290a860ba0e4b08a09e36f122453fdf45f0ba02bfa",
+    ".agents/skills/bp-ui-macos/SKILL.md": "263e5fb60d4759564b2c3b1679a7e4fc3d3d784b42e30139d19e07c7a85a94ee",
+    ".agents/skills/bp-ui-web/SKILL.md": "cc6f6955422c99c7260914a95925907e8aa4b6c211c4d691534a92080a917be7",
+    ".agents/skills/bp-ui-windows/SKILL.md": "f4bf8c2be2589f0b36e0e4926dbf1de5033a55c41907393b915933b743f9905e",
+    ".codex-bp/project.json": "a55a8cf945ddd97f2d122a63894c81b041dd518248d845fd8d8b8994ce4a09dd",
+    ".codex-bp/prompts/architecture.md": "91e7a0f3ee34c0b42b21f2d3e130f5deab811c2b3cd2265bae0880ec7ab3b0e9",
+    ".codex-bp/prompts/delivery.md": "11f66e03959ee6ad34d56c0905f49c45f92e8da0529bd3d17483932236a59074",
+    ".codex-bp/prompts/full-task.md": "4714db13727a6b6b84de2c516449a9f80629c874e36b0a3ec4e81662a9d5461f",
+    ".codex-bp/prompts/handoff.md": "4b22a74eaaa9612d79cb03742cca5861a9a314217f6c2d2e9bb85eb6e50c18b2",
+    ".codex-bp/prompts/implementation.md": "80060c8bfb8936957e9e27b6be2f9fd6bc51030c8b9eaeaef823f285d3d0b493",
+    ".codex-bp/prompts/planning.md": "067b68a75c7f65d431ca514e4497a7d004a9a45cd7f0bd2946f7b5bb5447fafa",
+    ".codex-bp/prompts/project-analysis.md": "93fcf7e44dd129be72a78dd1aec7e3547ee7267d604068fcf3db097e213c5510",
+    ".codex-bp/prompts/project-setup.md": "926b50b585e098821a9be9c89ea768c0c84451b8d036e90925ec485b9177ed9c",
+    ".codex-bp/prompts/requirements.md": "108b4fce12b9a77f2ea572e5618b57aec3c883c9defe6ef8faf0d34c2b544aae",
+    ".codex-bp/prompts/retrospective.md": "f132369fc8309089622f28a3c59ac19b4d272b19e4ed7f55a4c88046c49c89fb",
+    ".codex-bp/prompts/review.md": "8aed8dd391c9e928a00c96903ca2aa6f0de2f1006633758322bc98914c2a6706",
+    ".codex-bp/prompts/verification.md": "3902861284a8b62e050487d82c35799e3ff469e7fb647236fce3eb3d39717f9d",
+    ".codex-bp/rules/01-workflow.md": "444ed1c478e1382e58ab523069d1026eea4afea8a631c81bc651302c0951c364",
+    ".codex-bp/rules/02-project-setup.md": "68201d03ce378a3a07f19cbb5b743fc59ce6b4e48721a18819a96eb2ff83842b",
+    ".codex-bp/rules/03-requirements.md": "383cf8d2085d3c7cbe13ec5f2ffbe3b038345dfe70621bc80026371e84e88aca",
+    ".codex-bp/rules/04-planning.md": "272a67ba12fb0006b4de8897e26f94fd90c73de7fd9ad140c7c2bc2a41b321c2",
+    ".codex-bp/rules/05-task-execution.md": "7ccd38bd9d1b0589ee54da36e9cf7838c3d07f17d8bd54c9aef538b0295e998d",
+    ".codex-bp/rules/06-verification.md": "c83ef8e7e501f7dbbc8c131ec35486208bc13a5234cfb1e1459feedd0bb0e49e",
+    ".codex-bp/rules/07-collaboration.md": "e418acf2fa084bebe71a53c9d20f9755b67a222311dc05b803987b2da2951d16",
+    ".codex-bp/rules/08-git.md": "be0431b93e6d91e04a8f674093c05de46fe83c761ac6ba5307cdcf1eb4ef2eaa",
+    ".codex-bp/rules/09-security.md": "8c938718cef01b0acc549622512ee1be5bcaae5b243edb99fda9ed2b3d5ec46e",
+    ".codex-bp/rules/10-capabilities.md": "cb67d07634056cec98500d2f4930f56ad5b4ecca463f8abdf3d844c262aaa37a",
+    ".codex-bp/rules/11-handoff.md": "4525ce96b119ecf99e9991c8259dbbcbeb94495617ea74607eb3c95f87a711c6",
+    ".codex-bp/rules/12-quality-guardrails.md": "2700e73880c0571de65fe748f6b907f687e45bc9d2da9c0913fa40ca58968526",
+    ".codex-bp/rules/13-done.md": "9c182d48293c0cfdaf8c9958fd62ab669cbef25e27f469376bd58f23054ac8a1",
+    ".codex-bp/rules/14-project-types.md": "265007472ef2d0749a85b97f3372498540e40bbcf0cf8a09fcde841c63df9856",
+    ".codex-bp/templates/goal-record.md": "07cbfad5a5da5c90f7afbddf2074b7c16de6b32515bbf13bf40f083684c82bf2",
+    ".codex-bp/templates/handoff.md": "3649580adb423ecb4cbad4b467107b343d49a6b12f806358a3e5cb846f194a17",
+    ".codex-bp/templates/requirements.md": "040e462d8bbe7851f73a5bac0334eea37fa3d647eded56764735a650e3b95382",
+    ".codex-bp/templates/review-report.md": "a9831b2e3c6f38002417b97a920a62ea2a6faa550f2ec78116452285345c4607",
+    ".codex-bp/templates/task-plan.md": "4d90bc2cd1fa4935841cde65c2b064dfbbe9c7c39721165cb32155666dcb1c69",
+    ".codex-bp/templates/verification-record.md": "c4e402a78aefdd6e98163af13ba7804b675a71518d41bb8ec84e4148350b552f",
+    "AGENTS.md": "409ea45271f6fc1dfeac6b847390244a567b2b0a0e0f713d7df671a1c84624d6",
+    "VERSION_NOTES.md": "3bc57fc8aa128de4c83527d86dada387d2206b86479a3f7a0fbf77eac7e5d6d7"
+  }
+}
